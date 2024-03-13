@@ -1,28 +1,14 @@
 # import and setting variables
 import cutie
-from cutie import *
 import os
 from colorama import *
 import requests
 from datetime import datetime
-global celcius
-global debug
-global colour
-global weatherLocations
+global celcius, debug, colour, weatherLocations, TCoord, TWeather, TCountry, TTemp, TTempExtra, THumidity, TAtmosphericPressure, TWind, TCloudPercent, TSunriseSunset
 weatherLocations = []
 celcius = True
 debug = False
 colour = Fore.LIGHTWHITE_EX
-global TCoord
-global TWeather
-global TCountry
-global TTemp
-global TTempExtra
-global THumidity
-global TAtmosphericPressure
-global TWind
-global TCloudPercent
-global TSunriseSunset
 TCoord = False
 TWeather = True
 TCountry = False
@@ -134,17 +120,7 @@ def removeLocation():
     
 # Allows the user to change what information is shown
 def menu_shown_information():
-    global debug
-    global TCoord
-    global TWeather
-    global TCountry
-    global TTemp
-    global TTempExtra
-    global THumidity
-    global TAtmosphericPressure
-    global TWind
-    global TCloudPercent
-    global TSunriseSunset
+    global debug, TCoord, TWeather, TCountry, TTemp, TTempExtra, THumidity, TAtmosphericPressure, TWind, TCloudPercent, TSunriseSunset
     loop = True
     while loop == True:
         T1 = Fore.LIGHTGREEN_EX + ' ON' if TCoord else Fore.RED + ' OFF'
@@ -291,8 +267,7 @@ def menu_pick_location():
                        
 # Settings menu            
 def menu_settings():
-    global debug
-    global celcius
+    global debug, celcius
     setting = ''
     
     while setting != Fore.LIGHTRED_EX + 'Back':
