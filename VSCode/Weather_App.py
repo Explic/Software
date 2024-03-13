@@ -34,8 +34,6 @@ TWind = False
 TCloudPercent = False
 TSunriseSunset = False
 
-#datetime.fromtimestamp(number).strftime('%d-%m-%y %H:%M:%S')
-
 # Function to clear
 def clear():
     global debug
@@ -221,34 +219,38 @@ def PWeather(location):
             x = '°C'
         else:
             x = '°F'
-        if TCountry == True:
-            print(colour + Style.BRIGHT + f"Weather in {data['name']}, {data['sys']['country']}:\n" + Style.RESET_ALL)    
-        else:
-            print(colour + Style.BRIGHT + f"Weather in {data['name']}:\n" + Style.RESET_ALL)
-        if TCoord == True:
+        PSummary(data, TCountry)
+        if TCoord:
             print(f"Coordinates: {data['coord']['lon']}, {data['coord']['lat']}")
-        if TWeather == True:
+        if TWeather:
             print(f"Weather: {data['weather'][0]['main']} ({data['weather'][0]['description']})".capitalize())
-        if TTemp == True:
+        if TTemp:
             print(f"Temperature: {data['main']['temp']} °F")    
-        if TTempExtra == True:
-            print(f"Feels like: {data['main']['feels_like']} " + x)
-            print(f"Min Temp: {data['main']['temp_min']} " + x)
-            print(f"Max Temp: {data['main']['temp_max']} " + x)
-        if THumidity == True:
+        if TTempExtra:
+            print(f"Feels like: {data['main']['feels_like']} {x}")
+            print(f"Min Temp: {data['main']['temp_min']} {x}")
+            print(f"Max Temp: {data['main']['temp_max']} {x}")
+        if THumidity:
             print(f"Humidity: {data['main']['humidity']}%")
-        if TAtmosphericPressure == True:
+        if TAtmosphericPressure:
             print(f"Atmospheric Pressure: {data['main']['pressure']} hPa")
             print(f"Sea Level: {data['main']['sea_level']} hPa")
             print(f"Ground Level: {data['main']['grnd_level']} hPa")
-        if TWind == True:
+        if TWind:
             print(f"Wind: {data['wind']['speed']} m/s")
-        if TCloudPercent == True:
+        if TCloudPercent:
             print(f"Cloud Percentage: {data['clouds']['all']}%")
-        if TSunriseSunset == True:
+        if TSunriseSunset:
             print(f"Sunrise: {datetime.fromtimestamp(data['sys']['sunrise']).strftime('%H:%M:%S')}")
             print(f"Sunset: {datetime.fromtimestamp(data['sys']['sunset']).strftime('%H:%M:%S')}")
         input('Press enter to continue\n')
+
+def PSummary(data, country):
+    location = data['name']
+    if country:
+        location += f", {data['sys']['country']}"
+    print(Style.BRIGHT + Fore.LIGHTWHITE_EX + f"Weather in {location}:\n" + Style.RESET_ALL)
+    
 
 # Menu to get weather
 def menu_get_weather():
