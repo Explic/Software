@@ -64,7 +64,7 @@ class WeatherApp:
         while loop == True:
             location = input('Add a location or type back: ')
             location = location.capitalize()
-            if location == 'Back':
+            if location == 'Back' or location == '':
                 loop = False
                 break
             
@@ -368,13 +368,34 @@ class WeatherApp:
 
         return
 
+    def help(self):
+        self.clear()
+        print(Fore.LIGHTWHITE_EX + Style.BRIGHT + 'Weather App Help\n' + Style.RESET_ALL)
+        print('This is a simple weather app that uses the OpenWeather API to get weather data for a location.\n')
+        print('Press' + Fore.LIGHTCYAN_EX + ' Up' + Style.RESET_ALL + ' or ' + Fore.LIGHTCYAN_EX + 'Down' + Style.RESET_ALL + ' to scroll through the menu and ' + Fore.LIGHTCYAN_EX + 'Enter' + Style.RESET_ALL + ' to select an option.\n')
+        print('The app has a main menu with the following options:')
+        print(Fore.LIGHTCYAN_EX + 'Get Weather' + Style.RESET_ALL + ' - Get the weather for a location')
+        print(Fore.LIGHTCYAN_EX + 'Saved Locations' + Style.RESET_ALL + ' - Add, remove, or view saved locations')
+        print(Fore.LIGHTCYAN_EX + 'Settings' + Style.RESET_ALL + ' - Change the settings for the app')
+        print('You can select ' + Fore.LIGHTRED_EX + 'Exit' + Style.RESET_ALL + ' or press ' + Fore.LIGHTRED_EX + 'Ctrl+C' + Style.RESET_ALL + ' to exit the app.\n')
+        print('When you select ' + Fore.LIGHTCYAN_EX + 'Get Weather' + Style.RESET_ALL + ' you can pick a saved location to get the weather for.')
+        print('When you select ' + Fore.LIGHTCYAN_EX + 'Saved Locations' + Style.RESET_ALL + ' you can add, remove, and view saved locations.')
+        print('When you select ' + Fore.LIGHTCYAN_EX + 'Settings' + Style.RESET_ALL + ' you can change the temperature unit, turn on debug mode, change the colour of the text, and change what information is shown.\n')
+        print('In the settings menu:')
+        print('You can change the temperature unit to either Celsius or Fahrenheit.')
+        print('You can turn on debug mode to see the data from the OpenWeather API.')
+        print('You can change the colour of the text.')
+        print('You can change what information is shown when you get the weather for a location.\n')
+        
+        input('Press enter to continue\n')
+
     # main menu
     # selections: Get Weather, Saved Locations, Settings, Exit
     def menu_home(self):
         loop = True
         self.is_debug_mode = False
         while loop == True:
-            choice = self.menu('Weather App', ['Get Weather', 'Saved Locations', 'Settings', Fore.LIGHTRED_EX + 'Exit'])
+            choice = self.menu('Weather App', ['Get Weather', 'Saved Locations', 'Settings', Fore.LIGHTCYAN_EX + 'Help', Fore.LIGHTRED_EX + 'Exit'])
             
             if choice == 'Get Weather':
                 self.menu_get_weather()
@@ -384,6 +405,9 @@ class WeatherApp:
                 
             elif choice == 'Settings':
                 self.menu_settings()
+            
+            elif choice == Fore.LIGHTCYAN_EX + 'Help':
+                self.help()
                 
             elif choice == Fore.LIGHTRED_EX + 'Exit':
                 print(Style.RESET_ALL + 'Goodbye!')
