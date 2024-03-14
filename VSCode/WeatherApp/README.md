@@ -10,6 +10,7 @@ This is a simple console-based weather application written in Python. It uses th
 - Change the display colour
 - Debug mode for troubleshooting and displaying past interactions
 - Handle user errors and exceptions gracefully.
+- Saves and loads locations and settings into a text file
 
 ## Requirements
 
