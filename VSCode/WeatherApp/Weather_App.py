@@ -9,6 +9,8 @@ from colorama import *
 import requests
 # datetime is used to convert the sunrise and sunset times from Unix time to a readable format
 from datetime import datetime
+# used to save the settings to a file
+import json
 
 # Define the WeatherApp class
 class WeatherApp:
@@ -29,12 +31,27 @@ class WeatherApp:
         self.show_wind = False
         self.show_cloud_percent = False
         self.show_sunrise_sunset = False
+        self.load_locations() # <--- Load the locations from a file
+        
 
     # Clears the console and resets the text style
     def clear(self):
         if self.is_debug_mode == False:
             os.system('cls') 
         print(Style.RESET_ALL)
+        
+    # Saves the locations to a file
+    def save_locations(self):
+        with open('locations.json', 'w') as f:
+            json.dump(self.weather_locations, f)
+    
+    # Loads the locations from a file
+    def load_locations(self):
+        try:
+           with open('locations.json', 'r') as f:
+                self.weather_locations = json.load(f)
+        except FileNotFoundError:
+            self.weather_locations = []
         
     # Function to make menus easier to use, and colour them
     # Example: self.menu('Weather App', ['White', Fore.MAGENTA + 'Magenta', Fore.BLUE + 'Blue', Fore.GREEN + 'Green', Fore.RED + 'Red'])
@@ -51,7 +68,7 @@ class WeatherApp:
     
         self.clear()
         if self.is_debug_mode == True:
-            print(answer)
+            print(Fore.LIGHTGREEN_EX + 'Selected: ' + Style.RESET_ALL + answer)
         return answer
 
     # Function to get weather data from OpenWeather API
@@ -88,6 +105,7 @@ class WeatherApp:
                         
                     else:
                         self.weather_locations.append(location) # <--- Add location to list
+                        self.save_locations() # <--- Save the locations to a file
                         input('Location ' + location + ' added, press enter to continue\n')
                         loop = False
                 else:
@@ -118,6 +136,7 @@ class WeatherApp:
                     break
                 else:
                     self.weather_locations.remove(selection)
+                    self.save_locations()
                     print(Fore.LIGHTGREEN_EX + 'Location removed' + Style.RESET_ALL)
                     input('Press enter to continue\n')
         return
