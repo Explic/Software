@@ -1,15 +1,24 @@
 # import and setting variables
+# Cutie is used to make the menus
 import cutie
+# os is used to clear the console
 import os
+# colorama is used to change the text colour, e.g. Fore.LIGHTRED_EX
 from colorama import *
+# requests is used to get the weather data from the OpenWeather API
 import requests
+# datetime is used to convert the sunrise and sunset times from Unix time to a readable format
 from datetime import datetime
+
+# Define the WeatherApp class
 class WeatherApp:
+    # Initialises the class and sets the default values for the settings
     def __init__(self):
-        self.weather_locations = []
-        self.is_celcius = True
-        self.is_debug_mode = False
-        self.colour = Fore.LIGHTWHITE_EX
+        self.weather_locations = [] # <--- List to store locations
+        self.is_celcius = True # <--- Default temperature unit
+        self.is_debug_mode = False # <--- Default debug mode
+        self.colour = Fore.LIGHTWHITE_EX # <--- Default colour
+        # Default settings for what information is shown
         self.show_coord = False
         self.show_weather = True
         self.show_country = False
@@ -47,7 +56,9 @@ class WeatherApp:
 
     # Function to get weather data from OpenWeather API
     def get_weather(self, location):
+        # My api key
         api_key = "c9cf80040d93269dd66b49bf6e8a9196"
+
         if self.is_celcius == True:
             url = f"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={api_key}&units=metric"
         else:
@@ -146,7 +157,7 @@ class WeatherApp:
                         setattr(self, attr, not getattr(self, attr))
                         break
         
-    # Colours the Title cus its fun      
+    # Function to allow the user to change the color of the title text   
     def menu_colour(self):
         setting = self.menu('Colours', [Fore.LIGHTRED_EX + 'Red', Fore.BLUE + 'Blue', Fore.LIGHTCYAN_EX + 'Cyan', Fore.LIGHTMAGENTA_EX + 'Pink', Fore.GREEN + 'Green', Fore.YELLOW + 'Yellow', Fore.LIGHTWHITE_EX + 'White'])
         if setting == Fore.LIGHTRED_EX + 'Red':
@@ -186,7 +197,7 @@ class WeatherApp:
             else:
                 x = '°F'
             
-            # adds Failed to find data if it fails to find the data
+            # Print each type of weather information, if available
             try:
                 self.print_summary(data),
             except:
@@ -232,7 +243,7 @@ class WeatherApp:
                 print('Sunrise: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
                 print('Sunset: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
                      
-            input('Press enter to continue\n')
+            input('\nPress enter to continue\n')
 
     # Print Summary
     def print_summary(self, data):
@@ -288,6 +299,7 @@ class WeatherApp:
     # Print Sunrise and Sunset
     def print_sunrise_sunset(self, data):
         if self.show_sunrise_sunset:
+            # Convert the sunrise and sunset times from Unix time to a readable format
             print(f"Sunrise: {datetime.fromtimestamp(data['sys']['sunrise']).strftime('%H:%M:%S')}")
             print(f"Sunset: {datetime.fromtimestamp(data['sys']['sunset']).strftime('%H:%M:%S')}") 
 
@@ -310,7 +322,7 @@ class WeatherApp:
                 if x == False:
                     loop = False
                     break
-            #
+            # If there are locations saved, it opens the menu to add or remove locations
             else:
                 selection = self.menu('Saved Locations', ['Add a Location', 'Remove a Location', Fore.LIGHTRED_EX + 'Back'])
             
@@ -368,6 +380,7 @@ class WeatherApp:
 
         return
 
+    # Help menu, explains how to use the app
     def help(self):
         self.clear()
         print(Fore.LIGHTWHITE_EX + Style.BRIGHT + 'Weather App Help\n' + Style.RESET_ALL)
@@ -383,14 +396,14 @@ class WeatherApp:
         print('When you select ' + Fore.LIGHTCYAN_EX + 'Settings' + Style.RESET_ALL + ' you can change the temperature unit, turn on debug mode, change the colour of the text, and change what information is shown.\n')
         print('In the settings menu:')
         print('You can change the temperature unit to either Celsius or Fahrenheit.')
-        print('You can turn on debug mode to see the data from the OpenWeather API.')
+        print('You can turn on debug mode to see the data from the OpenWeather API as well as history')
         print('You can change the colour of the text.')
         print('You can change what information is shown when you get the weather for a location.\n')
         
         input('Press enter to continue\n')
 
     # main menu
-    # selections: Get Weather, Saved Locations, Settings, Exit
+    # selections: Get Weather, Saved Locations, Settings, Help, Exit
     def menu_home(self):
         loop = True
         self.is_debug_mode = False
@@ -417,8 +430,11 @@ class WeatherApp:
 try:
     app = WeatherApp()
     app.menu_home()
-except KeyboardInterrupt:
+except KeyboardInterrupt: # <--- If they press Ctrl+C it will exit the app instead of showing an error
     print(Style.RESET_ALL + 'Goodbye!')
     exit()
+except Exception as e: # <--- Catch any errors
+    print(Style.RESET_ALL + 'An error has occurred')
+    print(e)
 
     
