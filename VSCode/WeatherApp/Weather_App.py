@@ -16,22 +16,8 @@ import json
 class WeatherApp:
     # Initialises the class and sets the default values for the settings
     def __init__(self):
-        self.weather_locations = [] # <--- List to store locations
-        self.is_celcius = True # <--- Default temperature unit
-        self.is_debug_mode = False # <--- Default debug mode
-        self.colour = Fore.LIGHTWHITE_EX # <--- Default colour
-        # Default settings for what information is shown
-        self.show_coord = False
-        self.show_weather = True
-        self.show_country = False
-        self.show_temp = True
-        self.show_temp_extra = False
-        self.show_humidity = False
-        self.show_atmospheric_pressure = False
-        self.show_wind = False
-        self.show_cloud_percent = False
-        self.show_sunrise_sunset = False
         self.load_locations() # <--- Load the locations from a file
+        self.load_settings() # <--- Load the settings from a file
         
 
     # Clears the console and resets the text style
@@ -39,6 +25,59 @@ class WeatherApp:
         if self.is_debug_mode == False:
             os.system('cls') 
         print(Style.RESET_ALL)
+    
+    # Loads the settings from a file 
+    def load_settings(self):
+        try:
+            with open('settings.json', 'r') as f:
+                settings = json.load(f)
+                self.is_celcius = settings['is_celcius']
+                self.is_debug_mode = settings['is_debug_mode']
+                self.colour = settings['colour']
+                self.show_coord = settings['show_coord']
+                self.show_weather = settings['show_weather']
+                self.show_country = settings['show_country']
+                self.show_temp = settings['show_temp']
+                self.show_temp_extra = settings['show_temp_extra']
+                self.show_humidity = settings['show_humidity']
+                self.show_atmospheric_pressure = settings['show_atmospheric_pressure']
+                self.show_wind = settings['show_wind']
+                self.show_cloud_percent = settings['show_cloud_percent']
+                self.show_sunrise_sunset = settings['show_sunrise_sunset']
+        except FileNotFoundError:
+            self.is_celcius = True
+            self.is_debug_mode = False
+            self.colour = Fore.LIGHTWHITE_EX
+            self.show_coord = False
+            self.show_weather = True
+            self.show_country = False
+            self.show_temp = True
+            self.show_temp_extra = False
+            self.show_humidity = False
+            self.show_atmospheric_pressure = False
+            self.show_wind = False
+            self.show_cloud_percent = False
+            self.show_sunrise_sunset = False
+    
+    # Saves the settings to a file  
+    def save_settings(self):
+        settings = {
+            'is_celcius': self.is_celcius,
+            'is_debug_mode': self.is_debug_mode,
+            'colour': self.colour,
+            'show_coord': self.show_coord,
+            'show_weather': self.show_weather,
+            'show_country': self.show_country,
+            'show_temp': self.show_temp,
+            'show_temp_extra': self.show_temp_extra,
+            'show_humidity': self.show_humidity,
+            'show_atmospheric_pressure': self.show_atmospheric_pressure,
+            'show_wind': self.show_wind,
+            'show_cloud_percent': self.show_cloud_percent,
+            'show_sunrise_sunset': self.show_sunrise_sunset
+        }
+        with open('settings.json', 'w') as f:
+            json.dump(settings, f)
         
     # Saves the locations to a file
     def save_locations(self):
@@ -396,7 +435,10 @@ class WeatherApp:
                     self.is_celcius = False
                 else:
                     self.is_celcius = True
-
+        
+        # Saves the settings to a file
+        self.save_settings()
+        
         return
 
     # Help menu, explains how to use the app
