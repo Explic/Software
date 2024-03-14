@@ -21,7 +21,7 @@ class WeatherApp:
         self.show_cloud_percent = False
         self.show_sunrise_sunset = False
 
-    # Function to clear
+    # Clears the console and resets the text style
     def clear(self):
         if self.is_debug_mode == False:
             os.system('cls') 
@@ -39,7 +39,7 @@ class WeatherApp:
             selected_prefix= Style.RESET_ALL + ' ',
             caption_prefix= Fore.CYAN + '',
             )]
-        
+    
         self.clear()
         if self.is_debug_mode == True:
             print(answer)
@@ -58,6 +58,7 @@ class WeatherApp:
             print(data)
         return data
 
+    # Function to add a location
     def inputLocation(self):
         loop = True
         while loop == True:
@@ -91,7 +92,7 @@ class WeatherApp:
         else:
             return True
         
-                
+    # Function to remove a location        
     def removeLocation(self):
         loop = True
         while loop == True:
@@ -112,45 +113,38 @@ class WeatherApp:
         
     # Allows the user to change what information is shown
     def menu_shown_information(self):
-        loop = True
-        while loop == True:
-            T1 = Fore.LIGHTGREEN_EX + ' ON' if self.show_coord else Fore.RED + ' OFF'
-            T2 = Fore.LIGHTGREEN_EX + ' ON' if self.show_weather else Fore.RED + ' OFF'
-            T3 = Fore.LIGHTGREEN_EX + ' ON' if self.show_country else Fore.RED + ' OFF'
-            T4 = Fore.LIGHTGREEN_EX + ' ON' if self.show_temp else Fore.RED + ' OFF'
-            T5 = Fore.LIGHTGREEN_EX + ' ON' if self.show_temp_extra else Fore.RED + ' OFF'
-            T6 = Fore.LIGHTGREEN_EX + ' ON' if self.show_humidity else Fore.RED + ' OFF'
-            T7 = Fore.LIGHTGREEN_EX + ' ON' if self.show_atmospheric_pressure else Fore.RED + ' OFF'
-            T8 = Fore.LIGHTGREEN_EX + ' ON' if self.show_wind else Fore.RED + ' OFF'
-            T9 = Fore.LIGHTGREEN_EX + ' ON' if self.show_cloud_percent else Fore.RED + ' OFF'
-            T10 = Fore.LIGHTGREEN_EX + ' ON' if self.show_sunrise_sunset else Fore.RED + ' OFF'
-                
-            setting = self.menu('Shown Information', [Fore.LIGHTGREEN_EX + 'Turn All On', 'Coordinates' + T1, 'Weather' + T2, 'Country' + T3, 'Temperature' + T4, 'Extra Temp Info' + T5, 'Humidity' + T6, 'Atmospheric Pressure' + T7, 'Wind' + T8, 'Cloud Percentage' + T9, 'Sunrise/Sunset'+ T10, Fore.LIGHTRED_EX + 'Back'])
-            
+        settings = [
+            ('Coordinates', 'show_coord'),
+            ('Weather', 'show_weather'),
+            ('Country', 'show_country'),
+            ('Temperature', 'show_temp'),
+            ('Extra Temp Info', 'show_temp_extra'),
+            ('Humidity', 'show_humidity'),
+            ('Atmospheric Pressure', 'show_atmospheric_pressure'),
+            ('Wind', 'show_wind'),
+            ('Cloud Percentage', 'show_cloud_percent'),
+            ('Sunrise/Sunset', 'show_sunrise_sunset')
+        ]
+
+        while True:
+            options = [Fore.LIGHTGREEN_EX + 'Turn All On']
+            for name, attr in settings:
+                indicator = Fore.LIGHTGREEN_EX + ' ON' if getattr(self, attr) else Fore.RED + ' OFF'
+                options.append(name + indicator)
+            options.append(Fore.LIGHTRED_EX + 'Back')
+
+            setting = self.menu('Shown Information', options)
+
             if setting == Fore.LIGHTGREEN_EX + 'Turn All On':
-                self.show_coord, self.show_weather, self.show_country, self.show_temp, self.show_temp_extra, self.show_humidity, self.show_atmospheric_pressure, self.show_wind, self.show_cloud_percent, self.show_sunrise_sunset = True, True, True, True, True, True, True, True, True, True
-            if setting == 'Coordinates' + T1:
-                self.show_coord = not self.show_coord
-            if setting == 'Weather' + T2:
-                self.show_weather = not self.show_weather
-            if setting == 'Country' + T3:
-                self.show_country = not self.show_country
-            if setting == 'Temperature' + T4:
-                self.show_temp = not self.show_temp
-            if setting == 'Extra Temp Info' + T5:
-                self.show_temp_extra = not self.show_temp_extra
-            if setting == 'Humidity' + T6:
-                self.show_humidity = not self.show_humidity
-            if setting == 'Atmospheric Pressure' + T7:
-                self.show_atmospheric_pressure = not self.show_atmospheric_pressure
-            if setting == 'Wind' + T8:
-                self.show_wind = not self.show_wind
-            if setting == 'Cloud Percentage' + T9:
-                self.show_cloud_percent = not self.show_cloud_percent
-            if setting == 'Sunrise/Sunset' + T10:
-                self.show_sunrise_sunset = not self.show_sunrise_sunset
-            if setting == Fore.LIGHTRED_EX + 'Back':
-                loop = False
+                for _, attr in settings:
+                    setattr(self, attr, True)
+            elif setting == Fore.LIGHTRED_EX + 'Back':
+                break
+            else:
+                for name, attr in settings:
+                    if setting.startswith(name):
+                        setattr(self, attr, not getattr(self, attr))
+                        break
         
     # Colours the Title cus its fun      
     def menu_colour(self):
@@ -178,6 +172,7 @@ class WeatherApp:
     # 'sys': {'type': 2, 'id': 2008671, 'country': 'AU', 'sunrise': 1710273193, 'sunset': 1710317805}, 
     # 'timezone': 39600, 'id': 2176081, 'name': 'Berowra', 'cod': 200}
 
+    # Print the weather data, format it, and handle errors
     def PWeather(self, location):
         data = self.get_weather(location)
         if data['cod'] == 200:
@@ -187,6 +182,7 @@ class WeatherApp:
             else:
                 x = '°F'
             
+            # adds Failed to find data if it fails to find the data
             try:
                 self.print_summary(data),
             except:
@@ -231,59 +227,67 @@ class WeatherApp:
             except:
                 print('Sunrise: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
                 print('Sunset: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
-            
-            
-            
+                     
             input('Press enter to continue\n')
 
+    # Print Summary
     def print_summary(self, data):
         location = data['name']
         if self.show_country:
             location += f", {data['sys']['country']}"
         print(Style.BRIGHT + Fore.LIGHTWHITE_EX + f"Weather in {location}:\n" + Style.RESET_ALL)
 
+    # Print Coordinates
     def print_coordinates(self, data):
                 if self.show_coord:
                     print(f"Coordinates: {data['coord']['lon']}, {data['coord']['lat']}")
 
+    # Print Weather
     def print_weather(self, data):
         if self.show_weather:
             print(f"Weather: {data['weather'][0]['main']} ({data['weather'][0]['description']})".capitalize())
 
+    # Print Temperature
     def print_temperature(self, data, x):
         if self.show_temp:
             print(f"Temperature: {data['main']['temp']} {x}")
 
+    # Print Extra Temperature Information
     def print_temperature_extra(self, data, x):
         if self.show_temp_extra:
             print(f"Feels like: {data['main']['feels_like']} {x}")
             print(f"Max Temp: {data['main']['temp_max']} {x}")
             print(f"Min Temp: {data['main']['temp_min']} {x}")
 
+    # Print Humidity
     def print_humidity(self, data):
         if self.show_humidity:
             print(f"Humidity: {data['main']['humidity']}%")
-
+            
+    # Print Atmospheric Pressure
     def print_atmospheric_pressure(self, data):
         if self.show_atmospheric_pressure:
             print(f"Atmospheric Pressure: {data['main']['pressure']} hPa")
             print(f"Sea Level: {data['main']['sea_level']} hPa")
             print(f"Ground Level: {data['main']['grnd_level']} hPa")
 
+    # Print Wind
     def print_wind(self, data):
         if self.show_wind:
             print(f"Wind: {data['wind']['speed']} m/s")
 
+    # Print Cloud Percentage
     def print_cloud_percentage(self, data):
         if self.show_cloud_percent:
             print(f"Cloud Percentage: {data['clouds']['all']}%")
 
+    # Print Sunrise and Sunset
     def print_sunrise_sunset(self, data):
         if self.show_sunrise_sunset:
             print(f"Sunrise: {datetime.fromtimestamp(data['sys']['sunrise']).strftime('%H:%M:%S')}")
             print(f"Sunset: {datetime.fromtimestamp(data['sys']['sunset']).strftime('%H:%M:%S')}") 
 
-    # Menu to get weather
+    # decides if the user has inputted a location or not and then runs the function to get the weather data
     def menu_get_weather(self):
         if self.weather_locations == []:
             print (Fore.LIGHTRED_EX + 'No locations saved, please add a location' + Style.RESET_ALL)
@@ -302,7 +306,7 @@ class WeatherApp:
                 if x == False:
                     loop = False
                     break
-                        
+            #
             else:
                 selection = self.menu('Saved Locations', ['Add a Location', 'Remove a Location', Fore.LIGHTRED_EX + 'Back'])
             
@@ -321,12 +325,14 @@ class WeatherApp:
     def menu_settings(self):
         setting = ''
         
+        # indicator for debug mode
         while setting != Fore.LIGHTRED_EX + 'Back':
             if self.is_debug_mode == True:
                 DOn = Fore.LIGHTGREEN_EX + ' ON'
             else:
                 DOn = Fore.RED + ' OFF'
-                
+            
+            # indicator for temperature unit
             if self.is_celcius == True:
                 T = Fore.LIGHTGREEN_EX + '°C' + Fore.LIGHTWHITE_EX + ' < ' + Fore.LIGHTRED_EX + '°F'
             else:
@@ -334,28 +340,32 @@ class WeatherApp:
                 
             setting = self.menu('Settings', ['Temperature in ' + T, 'Debug Mode ' + DOn, 'Set Colour', 'Shown Information', Fore.LIGHTRED_EX + 'Back'])
             
+            # Changes the setting to the opposite of what it is when it is selected
             if setting == 'Debug Mode ' + DOn:
                 if self.is_debug_mode == True:
                     self.is_debug_mode = False
                 else:
                     self.is_debug_mode = True
             
+            # Opens the colour menu
             if setting == 'Set Colour':
                 self.menu_colour()
-                
+            
+            # Opens the shown information menu
             if setting == 'Shown Information':
                 self.menu_shown_information()
                 
+            # Changes the temperature unit to opposite
             if setting == 'Temperature in ' + T:
                 if self.is_celcius == True:
                     self.is_celcius = False
                 else:
                     self.is_celcius = True
-                    
-        
+
         return
 
-    # Weather app using a menu
+    # main menu
+    # selections: Get Weather, Saved Locations, Settings, Exit
     def menu_home(self):
         loop = True
         self.is_debug_mode = False
