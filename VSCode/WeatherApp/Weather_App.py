@@ -148,7 +148,7 @@ class WeatherApp:
         
     # Colours the Title cus its fun      
     def menu_colour(self):
-        setting = self.menu('Colours', [Fore.LIGHTRED_EX + 'Red', Fore.BLUE + 'Blue', Fore.LIGHTCYAN_EX + 'Cyan', Fore.LIGHTMAGENTA_EX + 'Pink', Fore.LIGHTWHITE_EX + 'White'])
+        setting = self.menu('Colours', [Fore.LIGHTRED_EX + 'Red', Fore.BLUE + 'Blue', Fore.LIGHTCYAN_EX + 'Cyan', Fore.LIGHTMAGENTA_EX + 'Pink', Fore.GREEN + 'Green', Fore.YELLOW + 'Yellow', Fore.LIGHTWHITE_EX + 'White'])
         if setting == Fore.LIGHTRED_EX + 'Red':
             self.colour = Fore.LIGHTRED_EX
         elif setting == Fore.BLUE + 'Blue':
@@ -157,8 +157,12 @@ class WeatherApp:
             self.colour = Fore.LIGHTCYAN_EX
         elif setting == Fore.LIGHTMAGENTA_EX + 'Pink':
             self.colour = Fore.LIGHTMAGENTA_EX
+        elif setting == Fore.GREEN + 'Green':
+            self.colour = Fore.GREEN
         elif setting == Fore.LIGHTWHITE_EX + 'White':
             self.colour = Fore.LIGHTWHITE_EX
+        elif setting == Fore.YELLOW + 'Yellow':
+            self.colour = Fore.YELLOW
 
     # Example Data from OpenWeather API:
     # {'coord': {'lon': 151.15, 'lat': -33.6333}, 
