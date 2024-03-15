@@ -44,7 +44,7 @@ class WeatherApp:
                 self.show_wind = settings['show_wind']
                 self.show_cloud_percent = settings['show_cloud_percent']
                 self.show_sunrise_sunset = settings['show_sunrise_sunset']
-        except FileNotFoundError:
+        except:
             self.is_celcius = True
             self.is_debug_mode = False
             self.colour = Fore.LIGHTWHITE_EX
@@ -61,35 +61,41 @@ class WeatherApp:
     
     # Saves the settings to a file  
     def save_settings(self):
-        settings = {
-            'is_celcius': self.is_celcius,
-            'is_debug_mode': self.is_debug_mode,
-            'colour': self.colour,
-            'show_coord': self.show_coord,
-            'show_weather': self.show_weather,
-            'show_country': self.show_country,
-            'show_temp': self.show_temp,
-            'show_temp_extra': self.show_temp_extra,
-            'show_humidity': self.show_humidity,
-            'show_atmospheric_pressure': self.show_atmospheric_pressure,
-            'show_wind': self.show_wind,
-            'show_cloud_percent': self.show_cloud_percent,
-            'show_sunrise_sunset': self.show_sunrise_sunset
-        }
-        with open('settings.json', 'w') as f:
-            json.dump(settings, f)
+        try: 
+            settings = {
+                'is_celcius': self.is_celcius,
+                'is_debug_mode': self.is_debug_mode,
+                'colour': self.colour,
+                'show_coord': self.show_coord,
+                'show_weather': self.show_weather,
+                'show_country': self.show_country,
+                'show_temp': self.show_temp,
+                'show_temp_extra': self.show_temp_extra,
+                'show_humidity': self.show_humidity,
+                'show_atmospheric_pressure': self.show_atmospheric_pressure,
+                'show_wind': self.show_wind,
+                'show_cloud_percent': self.show_cloud_percent,
+                'show_sunrise_sunset': self.show_sunrise_sunset
+            }
+            with open('settings.json', 'w') as f:
+                json.dump(settings, f)
+        except:
+            print(Fore.LIGHTRED_EX + 'Failed to save settings' + Style.RESET_ALL)
         
     # Saves the locations to a file
     def save_locations(self):
-        with open('locations.json', 'w') as f:
-            json.dump(self.weather_locations, f)
+        try:
+            with open('locations.json', 'w') as f:
+                json.dump(self.weather_locations, f)
+        except:
+            print(Fore.LIGHTRED_EX + 'Failed to save locations' + Style.RESET_ALL)
     
     # Loads the locations from a file
     def load_locations(self):
         try:
            with open('locations.json', 'r') as f:
                 self.weather_locations = json.load(f)
-        except FileNotFoundError:
+        except:
             self.weather_locations = []
         
     # Function to make menus easier to use, and colour them
@@ -494,8 +500,10 @@ try:
 except KeyboardInterrupt: # <--- If they press Ctrl+C it will exit the app instead of showing an error
     print(Style.RESET_ALL + 'Goodbye!')
     exit()
+    
 except Exception as e: # <--- Catch any errors
     print(Style.RESET_ALL + 'An error has occurred')
     print(e)
+    input('Press enter to continue\n')
 
     
