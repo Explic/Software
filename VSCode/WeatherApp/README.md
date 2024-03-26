@@ -12,6 +12,7 @@ This is a simple console-based weather application written in Python. It uses th
 - Handle user errors and exceptions gracefully.
 - Saves and loads locations and settings into a text file
 
+
 ## Requirements
 
 - Python 3
@@ -23,6 +24,7 @@ This is a simple console-based weather application written in Python. It uses th
 pip install cutie colorama requests
 ```
 
+
 ## How to use
 
 1. Run the `Weather_App.py` script in your Python environment.
@@ -33,6 +35,7 @@ pip install cutie colorama requests
 7. Select 'Settings' to customize the information displayed, change the display colour, or toggle the debug mode.
 8. Select 'Exit' to close the application (You can also exit with ctrl+c).
 
+
 ## Settings
 
 In the settings menu, you can:
@@ -41,6 +44,7 @@ In the settings menu, you can:
 - Turn on/off debug mode
 - Change the colour of the menu
 - Choose which weather information to display
+
 
 ## Customizable Information
 
@@ -59,3 +63,8 @@ You can customize the information displayed by the application. Here are the opt
 
 You can toggle these options ON and OFF in the "Shown Information" section of the settings menu.
 
+
+## File Saving
+
+The weather app takes inputted settings and locations and saves them in a JSON file named `settings.json` and `locations.json`.
+It also saves logs of the user's past actions and returned information in a text file named `logs.txt`.
