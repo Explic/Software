@@ -103,7 +103,7 @@ class WeatherApp:
         
     def write_log(self, message):
         try:
-            log = f'Time: {datetime.now().strftime("%H:%M:%S")}, Message: {message}\n'
+            log = f'{datetime.now().strftime("%H:%M:%S")},  {message}\n'
             with open('logs.txt', 'a') as f:
                 f.write(log)
         except:
@@ -176,6 +176,7 @@ class WeatherApp:
                     else:
                         self.weather_locations.append(location) # <--- Add location to list
                         self.save_locations() # <--- Save the locations to a file
+                        self.write_log('Location ' + location + ' added')
                         input('Location ' + location + ' added, press enter to continue\n')
                         loop = False
                 else:
@@ -184,8 +185,10 @@ class WeatherApp:
             except Exception as e: # <--- Catch any errors
                 self.clear()
                 if self.is_debug_mode == True:
+                    self.write_log('Failed to find location: ' + location)
                     print(e)
                 print(Fore.LIGHTRED_EX + 'An error has occurred' + Style.RESET_ALL)
+                self.write_log('Failed to find location: ' + location)
         if self.weather_locations == []:
             return False
         else:
@@ -207,6 +210,7 @@ class WeatherApp:
                 else:
                     self.weather_locations.remove(selection)
                     self.save_locations()
+                    self.write_log('Location ' + selection + ' removed')
                     print(Fore.LIGHTGREEN_EX + 'Location removed' + Style.RESET_ALL)
                     input('Press enter to continue\n')
         return
@@ -535,7 +539,7 @@ class WeatherApp:
         
         # Saves the settings to a file
         self.save_settings()
-        self.write_log('SAVED_SETTINGS: ' + ' ' + 'Temperature in ' + T + ' ' + 'Debug Mode ' + DOn + ' ' + 'Colour ' + self.colour)
+        self.write_log('SAVED_SETTINGS')
         
         return
 
@@ -566,6 +570,7 @@ class WeatherApp:
     # selections: Get Weather, Saved Locations, Settings, Help, Exit
     def menu_home(self):
         loop = True
+        self.write_log('USER_START')
         self.is_debug_mode = False
         while loop == True:
             choice = self.menu('Weather App', ['Get Weather', 'Saved Locations', 'Settings', Fore.LIGHTCYAN_EX + 'Help', Fore.LIGHTRED_EX + 'Exit'])
@@ -589,6 +594,7 @@ class WeatherApp:
             elif choice == Fore.LIGHTRED_EX + 'Exit':
                 self.write_log('USER_SELECT_EXIT')
                 print(Style.RESET_ALL + 'Goodbye!')
+                self.write_log('USER_EXIT\n\n\n')
                 exit()
 
 # Run the weather app
