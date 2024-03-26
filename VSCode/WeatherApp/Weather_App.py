@@ -12,6 +12,9 @@ from datetime import datetime
 # used to save the settings to a file
 import json
 
+import time
+
+
 # Define the WeatherApp class
 class WeatherApp:
     # Initialises the class and sets the default values for the settings
@@ -98,6 +101,14 @@ class WeatherApp:
         except:
             self.weather_locations = []
         
+    def write_log(self, message):
+        try:
+            log = f'Time: {datetime.now().strftime("%H:%M:%S")}, Message: {message}\n'
+            with open('logs.txt', 'a') as f:
+                f.write(log)
+        except:
+            print(Fore.LIGHTRED_EX + 'Failed to write to logs' + Style.RESET_ALL)
+    
     # Function to make menus easier to use, and colour them
     # Example: self.menu('Weather App', ['White', Fore.MAGENTA + 'Magenta', Fore.BLUE + 'Blue', Fore.GREEN + 'Green', Fore.RED + 'Red'])
     def menu(self, title, options):
@@ -129,8 +140,22 @@ class WeatherApp:
         data = response.json()
         if self.is_debug_mode == True:
             print(data)
+            self.write_log('GET_WEATHER_DATA: ' + str(data))
         return data
 
+    def get_forecast(self, location):
+        api_key = "c9cf80040d93269dd66b49bf6e8a9196"
+        if self.is_celcius == True:
+            url = f"http://api.openweathermap.org/data/2.5/forecast?q={location}&appid={api_key}&units=metric"
+        else:
+            url = f"http://api.openweathermap.org/data/2.5/forecast?q={location}&appid={api_key}&units=imperial"
+        response = requests.get(url)
+        data = response.json()
+        if self.is_debug_mode == True:
+            print(data)
+            self.write_log('GET_FORECAST_DATA: ' + str(data))
+        return data
+    
     # Function to add a location
     def inputLocation(self):
         loop = True
@@ -253,6 +278,7 @@ class WeatherApp:
 
     # Print the weather data, format it, and handle errors
     def PWeather(self, location):
+        self.write_log('USER_GET_WEATHER ' + location)
         data = self.get_weather(location)
         if data['cod'] == 200:
             self.clear()
@@ -266,46 +292,60 @@ class WeatherApp:
                 self.print_summary(data),
             except:
                 print('Weather in ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
+                self.write_log('Weather in: '  'Failed to find data')
             try:
                 self.print_coordinates(data),
             except:
                 print('Coordinates: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
+                self.write_log('Coordinates: '  'Failed to find data')
             try:   
                 self.print_weather(data),
             except:
                 print('Weather: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
+                self.write_log('Weather: '  'Failed to find data')
             try:
                 self.print_temperature(data, x),
             except:
                 print('Temperature: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
+                self.write_log('Temperature: '  'Failed to find data')
             try:
                 self.print_temperature_extra(data, x),
             except:
                 print('Feels like : ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
                 print('Max Temp: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
                 print('Min Temp: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL) 
+                self.write_log('Feels like: '  'Failed to find data')
+                self.write_log('Max Temp: '  'Failed to find data')
+                self.write_log('Min Temp: '  'Failed to find data')
             try:
                 self.print_humidity(data),
             except:
                 print('Humidity: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
+                self.write_log('Humidity: '  'Failed to find data')
             try:
                 self.print_atmospheric_pressure(data),
             except:
                 print('Sea Level: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
                 print('Ground Level: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
+                self.write_log('Sea Level: '  'Failed to find data')
+                self.write_log('Ground Level: '  'Failed to find data')
             try:
                 self.print_wind(data),
             except:
                 print('Wind: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
+                self.write_log('Wind: '  'Failed to find data')
             try:
                 self.print_cloud_percentage(data),
             except: 
                 print('Cloud Percentage: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
+                self.write_log('Cloud Percentage: '  'Failed to find data')
             try:
                 self.print_sunrise_sunset(data)
             except:
                 print('Sunrise: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
                 print('Sunset: ' + Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
+                self.write_log('Sunrise: '  'Failed to find data')
+                self.write_log('Sunset: '  'Failed to find data')
                      
             input('\nPress enter to continue\n')
 
@@ -315,21 +355,25 @@ class WeatherApp:
         if self.show_country:
             location += f", {data['sys']['country']}"
         print(Style.BRIGHT + Fore.LIGHTWHITE_EX + f"Weather in {location}:\n" + Style.RESET_ALL)
+        self.write_log('Weather in: ' + location)
 
     # Print Coordinates
     def print_coordinates(self, data):
                 if self.show_coord:
                     print(f"Coordinates: {data['coord']['lon']}, {data['coord']['lat']}")
+                    self.write_log('Coordinates: ' + str(data['coord']['lon']) + ', ' + str(data['coord']['lat']))
 
     # Print Weather
     def print_weather(self, data):
         if self.show_weather:
             print(f"Weather: {data['weather'][0]['main']} ({data['weather'][0]['description']})".capitalize())
+            self.write_log('Weather: ' + data['weather'][0]['main'] + ' (' + data['weather'][0]['description'] + ')')
 
     # Print Temperature
     def print_temperature(self, data, x):
         if self.show_temp:
             print(f"Temperature: {data['main']['temp']} {x}")
+            self.write_log('Temperature: ' + str(data['main']['temp']) + ' ' + x)
 
     # Print Extra Temperature Information
     def print_temperature_extra(self, data, x):
@@ -337,11 +381,15 @@ class WeatherApp:
             print(f"Feels like: {data['main']['feels_like']} {x}")
             print(f"Max Temp: {data['main']['temp_max']} {x}")
             print(f"Min Temp: {data['main']['temp_min']} {x}")
+            self.write_log('Feels like: ' + str(data['main']['feels_like']) + ' ' + x)
+            self.write_log('Max Temp: ' + str(data['main']['temp_max']) + ' ' + x)
+            self.write_log('Min Temp: ' + str(data['main']['temp_min']) + ' ' + x)
 
     # Print Humidity
     def print_humidity(self, data):
         if self.show_humidity:
             print(f"Humidity: {data['main']['humidity']}%")
+            self.write_log('Humidity: ' + str(data['main']['humidity']) + '%')
             
     # Print Atmospheric Pressure
     def print_atmospheric_pressure(self, data):
@@ -349,23 +397,60 @@ class WeatherApp:
             print(f"Atmospheric Pressure: {data['main']['pressure']} hPa")
             print(f"Sea Level: {data['main']['sea_level']} hPa")
             print(f"Ground Level: {data['main']['grnd_level']} hPa")
+            self.write_log('Atmospheric Pressure: ' + str(data['main']['pressure']) + ' hPa')
+            self.write_log('Sea Level: ' + str(data['main']['sea_level']) + ' hPa')
+            self.write_log('Ground Level: ' + str(data['main']['grnd_level']) + ' hPa')
+            
 
     # Print Wind
     def print_wind(self, data):
         if self.show_wind:
-            print(f"Wind: {data['wind']['speed']} m/s")
+            print(f"Wind: {data['wind']['speed']} m/s") 
+            self.write_log('Wind: ' + str(data['wind']['speed']) + ' m/s')
 
     # Print Cloud Percentage
     def print_cloud_percentage(self, data):
         if self.show_cloud_percent:
             print(f"Cloud Percentage: {data['clouds']['all']}%")
+            self.write_log('Cloud Percentage: ' + str(data['clouds']['all']) + '%')
 
     # Print Sunrise and Sunset
     def print_sunrise_sunset(self, data):
         if self.show_sunrise_sunset:
             # Convert the sunrise and sunset times from Unix time to a readable format
-            print(f"Sunrise: {datetime.fromtimestamp(data['sys']['sunrise']).strftime('%H:%M:%S')}")
-            print(f"Sunset: {datetime.fromtimestamp(data['sys']['sunset']).strftime('%H:%M:%S')}") 
+            print(f"Sunrise: {datetime.fromtimestamp(data['sys']['sunrise']).strftime('%H:%M')}")
+            print(f"Sunset: {datetime.fromtimestamp(data['sys']['sunset']).strftime('%H:%M')}") 
+            self.write_log('Sunrise: ' + datetime.fromtimestamp(data['sys']['sunrise']).strftime('%H:%M'))
+            self.write_log('Sunset: ' + datetime.fromtimestamp(data['sys']['sunset']).strftime('%H:%M'))
+
+    # Print the forecast data, For the next 5 days at 3 hour intervals
+    def print_forecast(self, data, i, x):
+        print(Style.BRIGHT + f"{datetime.fromtimestamp(data['list'][i]['dt']).strftime('%H:%M')}  " + Style.RESET_ALL + f"{data['list'][i]['main']['temp']} {x} - {data['list'][i]['weather'][0]['main']}".capitalize())
+        self.write_log(f"{datetime.fromtimestamp(data['list'][i]['dt']).strftime('%H:%M')}  {data['list'][i]['main']['temp']} {x} - {data['list'][i]['weather'][0]['main']}".capitalize())
+
+    def PForecast(self, location):
+        previous_day = ''
+        data = self.get_forecast(location)
+        if data['cod'] == '200':
+            self.clear()
+            if self.is_celcius == True:
+                x = '°C'
+            else:
+                x = '°F'
+            print(Style.BRIGHT + self.colour + f"Weather Forecast for {location}:" + Style.RESET_ALL)
+            for i in range (0, 40):
+                try:
+                    time.sleep(0.001)
+                    if previous_day != datetime.fromtimestamp(data['list'][i]['dt']).strftime('%B %d'):
+                        previous_day = datetime.fromtimestamp(data['list'][i]['dt']).strftime('%B %d')
+                        print(Style.BRIGHT + Fore.LIGHTWHITE_EX + '\n' + previous_day + Style.RESET_ALL)
+                    self.print_forecast(data, i, x)
+                except:
+                    print(Fore.LIGHTRED_EX + 'Failed to find data' + Style.RESET_ALL)
+            input('\nPress enter to continue\n')
+        else:
+            print(Fore.LIGHTRED_EX + 'Failed to find location' + Style.RESET_ALL)
+            input('Press enter to continue\n')
 
     # decides if the user has inputted a location or not and then runs the function to get the weather data
     def menu_get_weather(self):
@@ -374,8 +459,14 @@ class WeatherApp:
             input('Press enter to continue\n')
             return
         else:
-            selection = self.menu('Pick a saved location:', self.weather_locations + [Fore.LIGHTRED_EX + 'Back'])
-            self.PWeather(selection)
+            selection = self.menu('', ['Current Weather', 'Forecast', Fore.LIGHTRED_EX + 'Back'])
+            if selection == Fore.LIGHTRED_EX + 'Back':
+                return
+            selected_location = self.menu('Pick a saved location:', self.weather_locations)
+            if selection == 'Current Weather':
+                self.PWeather(selected_location)
+            elif selection == 'Forecast':
+                self.PForecast(selected_location)
 
     # Menu to pick a location
     def menu_pick_location(self):
@@ -444,6 +535,7 @@ class WeatherApp:
         
         # Saves the settings to a file
         self.save_settings()
+        self.write_log('SAVED_SETTINGS: ' + ' ' + 'Temperature in ' + T + ' ' + 'Debug Mode ' + DOn + ' ' + 'Colour ' + self.colour)
         
         return
 
@@ -454,11 +546,11 @@ class WeatherApp:
         print('This is a simple weather app that uses the OpenWeather API to get weather data for a location.\n')
         print('Press' + Fore.LIGHTCYAN_EX + ' Up' + Style.RESET_ALL + ' or ' + Fore.LIGHTCYAN_EX + 'Down' + Style.RESET_ALL + ' to scroll through the menu and ' + Fore.LIGHTCYAN_EX + 'Enter' + Style.RESET_ALL + ' to select an option.\n')
         print('The app has a main menu with the following options:')
-        print(Fore.LIGHTCYAN_EX + 'Get Weather' + Style.RESET_ALL + ' - Get the weather for a location')
+        print(Fore.LIGHTCYAN_EX + 'Get Weather' + Style.RESET_ALL + ' - Get the weather and forecast for a location')
         print(Fore.LIGHTCYAN_EX + 'Saved Locations' + Style.RESET_ALL + ' - Add, remove, or view saved locations')
         print(Fore.LIGHTCYAN_EX + 'Settings' + Style.RESET_ALL + ' - Change the settings for the app')
         print('You can select ' + Fore.LIGHTRED_EX + 'Exit' + Style.RESET_ALL + ' or press ' + Fore.LIGHTRED_EX + 'Ctrl+C' + Style.RESET_ALL + ' to exit the app.\n')
-        print('When you select ' + Fore.LIGHTCYAN_EX + 'Get Weather' + Style.RESET_ALL + ' you can pick a saved location to get the weather for.')
+        print('When you select ' + Fore.LIGHTCYAN_EX + 'Get Weather' + Style.RESET_ALL + ' you can choose to the the current weather or the weather forecast for a saved location.')
         print('When you select ' + Fore.LIGHTCYAN_EX + 'Saved Locations' + Style.RESET_ALL + ' you can add, remove, and view saved locations.')
         print('When you select ' + Fore.LIGHTCYAN_EX + 'Settings' + Style.RESET_ALL + ' you can change the temperature unit, turn on debug mode, change the colour of the text, and change what information is shown.\n')
         print('In the settings menu:')
@@ -466,6 +558,7 @@ class WeatherApp:
         print('You can turn on debug mode to see the data from the OpenWeather API as well as history')
         print('You can change the colour of the text.')
         print('You can change what information is shown when you get the weather for a location.\n')
+        print('Logs are saved in a folder named logs.txt\n')
         
         input('Press enter to continue\n')
 
@@ -478,18 +571,23 @@ class WeatherApp:
             choice = self.menu('Weather App', ['Get Weather', 'Saved Locations', 'Settings', Fore.LIGHTCYAN_EX + 'Help', Fore.LIGHTRED_EX + 'Exit'])
             
             if choice == 'Get Weather':
+                self.write_log('USER_SELECT_GETWEATHER')
                 self.menu_get_weather()
                 
             elif choice == 'Saved Locations':
+                self.write_log('USER_SELECT_SAVEDLOCATIONS')
                 self.menu_pick_location()
                 
             elif choice == 'Settings':
+                self.write_log('USER_SELECT_SETTINGS')
                 self.menu_settings()
             
             elif choice == Fore.LIGHTCYAN_EX + 'Help':
+                self.write_log('USER_SELECT_HELP')
                 self.help()
                 
             elif choice == Fore.LIGHTRED_EX + 'Exit':
+                self.write_log('USER_SELECT_EXIT')
                 print(Style.RESET_ALL + 'Goodbye!')
                 exit()
 
