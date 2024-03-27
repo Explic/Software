@@ -11,7 +11,6 @@ import requests
 from datetime import datetime
 # used to save the settings to a file
 import json
-
 import time
 
 
@@ -22,14 +21,13 @@ class WeatherApp:
         self.load_locations() # <--- Load the locations from a file
         self.load_settings() # <--- Load the settings from a file
         
-
     # Clears the console and resets the text style
     def clear(self):
         if self.is_debug_mode == False:
             os.system('cls') 
         print(Style.RESET_ALL)
     
-    # Loads the settings from a file 
+    # Loads the settings from a file, and defines variables
     def load_settings(self):
         try:
             with open('settings.json', 'r') as f:
@@ -47,7 +45,7 @@ class WeatherApp:
                 self.show_wind = settings['show_wind']
                 self.show_cloud_percent = settings['show_cloud_percent']
                 self.show_sunrise_sunset = settings['show_sunrise_sunset']
-        except:
+        except: # <--- If the file is not found, it sets the default values
             self.is_celcius = True
             self.is_debug_mode = False
             self.colour = Fore.LIGHTWHITE_EX
@@ -100,7 +98,8 @@ class WeatherApp:
                 self.weather_locations = json.load(f)
         except:
             self.weather_locations = []
-        
+    
+    # Writes to a log file
     def write_log(self, message):
         try:
             log = f'{datetime.now().strftime("%H:%M:%S")},  {message}\n'
@@ -132,6 +131,7 @@ class WeatherApp:
         # My api key
         api_key = "c9cf80040d93269dd66b49bf6e8a9196"
 
+        # Gets the weather information, either in Celcius or Fahrenheit
         if self.is_celcius == True:
             url = f"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={api_key}&units=metric"
         else:
@@ -143,6 +143,7 @@ class WeatherApp:
             self.write_log('GET_WEATHER_DATA: ' + str(data))
         return data
 
+    # Function to get forecast data from OpenWeather API
     def get_forecast(self, location):
         api_key = "c9cf80040d93269dd66b49bf6e8a9196"
         if self.is_celcius == True:
@@ -198,7 +199,7 @@ class WeatherApp:
     def removeLocation(self):
         loop = True
         while loop == True:
-            if self.weather_locations == []:
+            if self.weather_locations == []: # <--- Check if there are any locations to remove
                 print(Fore.LIGHTRED_EX + 'No locations to remove' + Style.RESET_ALL)
                 loop = False
                 break
@@ -232,14 +233,14 @@ class WeatherApp:
 
         while True:
             options = [Fore.LIGHTGREEN_EX + 'Turn All On']
-            for name, attr in settings:
+            for name, attr in settings: # <--- Check if the setting is on or off and displays an on or off
                 indicator = Fore.LIGHTGREEN_EX + ' ON' if getattr(self, attr) else Fore.RED + ' OFF'
                 options.append(name + indicator)
             options.append(Fore.LIGHTRED_EX + 'Back')
 
             setting = self.menu('Shown Information', options)
 
-            if setting == Fore.LIGHTGREEN_EX + 'Turn All On':
+            if setting == Fore.LIGHTGREEN_EX + 'Turn All On': # <--- Turns all settings on
                 for _, attr in settings:
                     setattr(self, attr, True)
             elif setting == Fore.LIGHTRED_EX + 'Back':
@@ -286,12 +287,12 @@ class WeatherApp:
         data = self.get_weather(location)
         if data['cod'] == 200:
             self.clear()
-            if self.is_celcius == True:
+            if self.is_celcius == True: # <--- Check if the temperature unit is in Celcius or Fahrenheit
                 x = '°C'
             else:
                 x = '°F'
             
-            # Print each type of weather information, if available
+            # Print each type of weather information, if available, otherwise it prints Failed to find data
             try:
                 self.print_summary(data),
             except:
@@ -432,6 +433,7 @@ class WeatherApp:
         print(Style.BRIGHT + f"{datetime.fromtimestamp(data['list'][i]['dt']).strftime('%H:%M')}  " + Style.RESET_ALL + f"{data['list'][i]['main']['temp']} {x} - {data['list'][i]['weather'][0]['main']}".capitalize())
         self.write_log(f"{datetime.fromtimestamp(data['list'][i]['dt']).strftime('%H:%M')}  {data['list'][i]['main']['temp']} {x} - {data['list'][i]['weather'][0]['main']}".capitalize())
 
+    # Print the weather forecast for the next 5 days at 3 hour intervals
     def PForecast(self, location):
         previous_day = ''
         data = self.get_forecast(location)
@@ -445,7 +447,7 @@ class WeatherApp:
             for i in range (0, 40):
                 try:
                     time.sleep(0.001)
-                    if previous_day != datetime.fromtimestamp(data['list'][i]['dt']).strftime('%B %d'):
+                    if previous_day != datetime.fromtimestamp(data['list'][i]['dt']).strftime('%B %d'): # <--- Check if the day has changed, if it has it prints the new day
                         previous_day = datetime.fromtimestamp(data['list'][i]['dt']).strftime('%B %d')
                         print(Style.BRIGHT + Fore.LIGHTWHITE_EX + '\n' + previous_day + Style.RESET_ALL)
                     self.print_forecast(data, i, x)
@@ -458,7 +460,7 @@ class WeatherApp:
 
     # decides if the user has inputted a location or not and then runs the function to get the weather data
     def menu_get_weather(self):
-        if self.weather_locations == []:
+        if self.weather_locations == []: # <--- Check if there are any locations saved
             print (Fore.LIGHTRED_EX + 'No locations saved, please add a location' + Style.RESET_ALL)
             input('Press enter to continue\n')
             return
